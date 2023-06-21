@@ -36,6 +36,9 @@ function Simulator() {
 	var langugeGame = 0; //eng
 
 	var LEDSTRING = null;
+
+	var kvLog;
+	var kvLogOld;
 	// workers can not access objects => window, document, parent
 	var ht16k33 = {
 		worker: null,
@@ -184,6 +187,12 @@ function Simulator() {
 					}
 				}
 				
+				/*if(kvLogOld != kvLog){
+					$.ajax({type: 'POST',url: '/KAE',data: {logAE: kvLog}});
+					kvLogOld = kvLog; 
+				}*/
+				
+					
 			}
 			// =================================================================
 			// Servo
@@ -573,7 +582,7 @@ function Simulator() {
 					return 1;
 				}
 			};
-
+			
 			// =================================================================
 			// sound
 			// =================================================================
@@ -706,6 +715,7 @@ function Simulator() {
 			});*/
 
 		});
+		
 	}
 
 	this.run = function(code_str, scene, lang) {

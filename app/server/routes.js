@@ -37,6 +37,11 @@ module.exports = function(app, Config, Log) {
 		fs.appendFile(path.join(log_base_dir,'/Filter_Log.txt'), '' + req.body['logAE']  + '\r\n', function (err) {if (err) throw err;});
     				res.sendStatus(200);
 	});
+	/*app.post('/KAE', function(req, res) 
+	{
+		fs.appendFile(path.join(log_base_dir,'/KV_Log.txt'), '' + req.body['logAE']  + '\r\n', function (err) {if (err) throw err;});
+    				res.sendStatus(200);
+	});*/
 	app.post('/ip_client', function(req, res) 
 	{
 			/*for (let i = 1; i < 2000; i++) 

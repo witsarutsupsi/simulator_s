@@ -23,6 +23,7 @@
 
     <p id="IP_Client">0.0.0.0</p>
     <p id="TextScene">SceneKV</p>
+    <p id="Text_MSG_KV_AE"></p>
     <p id="SceneExc">0</p>   
     <p id="TextLanguage">0</p>
     <p id="TextExitKV">0</p> 
@@ -445,13 +446,17 @@
         }
 
         /// Send from KV --->
+        function MSG_KV_AE(value)
+        {
+            document.getElementById("Text_MSG_KV_AE").innerHTML = value;
+        }
         function Call_MQTT_onconnect(value)
         {
-          document.getElementById("Text_mqtt_on_connect").innerHTML = value;
+            document.getElementById("Text_mqtt_on_connect").innerHTML = value;
         }
         function Call_MQTT_callback(value)
         {
-          document.getElementById("Text_mqtt_callback").innerHTML = value;
+            document.getElementById("Text_mqtt_callback").innerHTML = value;
         }
         function Call_MQTT_publish_topic(value)
         {
