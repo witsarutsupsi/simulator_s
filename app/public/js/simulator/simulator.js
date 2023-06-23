@@ -37,8 +37,8 @@ function Simulator() {
 
 	var LEDSTRING = null;
 
-	var kvLog;
-	var kvLogOld;
+	var kvLog = '';
+	var kvLogOld = '';
 	// workers can not access objects => window, document, parent
 	var ht16k33 = {
 		worker: null,
@@ -186,11 +186,12 @@ function Simulator() {
 						bt_nummsg = 0;
 					}
 				}
-				
-				/*if(kvLogOld != kvLog){
+
+				kvLog = '' + ($("#Text_MSG_KV_AE", svgDoc).text()); 
+				if(kvLogOld != kvLog){
 					$.ajax({type: 'POST',url: '/KAE',data: {logAE: kvLog}});
 					kvLogOld = kvLog; 
-				}*/
+				}
 				
 					
 			}
@@ -573,6 +574,7 @@ function Simulator() {
 					return 0;
 				} else {
 					return 1;
+					
 				}
 			};
 			button12.sw2_get_cb = function() {

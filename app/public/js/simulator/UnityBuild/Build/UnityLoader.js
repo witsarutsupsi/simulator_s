@@ -2259,7 +2259,7 @@ var UnityLoader = UnityLoader || {
             e || abort("Assertion failed: " + t)
         },
         optimizeMathFround: function(e, t) {
-            //console.log("optimizing out Math.fround calls");
+            console.log("optimizing out Math.fround calls");
             for (var r = {
                     LOOKING_FOR_MODULE: 0,
                     SCANNING_MODULE_VARIABLES: 1,
