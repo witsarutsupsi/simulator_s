@@ -1,0 +1,22 @@
+IDE  TimeStamp   Status  BlockName   BlockID NewCoordinate   NewParentID Group   NewValue    Element Name    NewInputName
+IDE    2023-6-27_18-32-28  click  null   undefined   undefined  undefined    undefined   Math   category    undefined   undefined
+IDE  2023-6-27_18-32-29  create  set x to ?   o~i-^yNYf,?E$S]chU.f   undefined  undefined    0de#@nq1r-_R5+rtCXWr   undefined   undefined    undefined   undefined
+IDE  2023-6-27_18-32-29  undefined  null   undefined   undefined  undefined    0de#@nq1r-_R5+rtCXWr   undefined   undefined    undefined   undefined
+IDE  2023-6-27_18-32-29  click  null   undefined   undefined  undefined    0de#@nq1r-_R5+rtCXWr   o~i-^yNYf,?E$S]chU.f   selected    undefined   undefined
+IDE  2023-6-27_18-32-29  move  set x to ?   o~i-^yNYf,?E$S]chU.f   254,138  undefined    0de#@nq1r-_R5+rtCXWr   undefined   undefined    undefined   undefined
+IDE  2023-6-27_18-32-29  move  set x to ?   o~i-^yNYf,?E$S]chU.f   263,137  undefined    0de#@nq1r-_R5+rtCXWr   undefined   undefined    undefined   undefined
+IDE  2023-6-27_18-32-30  click  null   undefined   undefined  undefined    undefined   Logic   category    undefined   undefined
+IDE  2023-6-27_18-32-30  create  if ? do ?   40E1v_PH3Ly$Th~CrM*f   undefined  undefined    egNT8l@phJxX;fU{_`iE   undefined   undefined    undefined   undefined
+IDE  2023-6-27_18-32-30  click  null   undefined   undefined  undefined    egNT8l@phJxX;fU{_`iE   40E1v_PH3Ly$Th~CrM*f   selected    undefined   undefined
+IDE  2023-6-27_18-32-30  move  if ? do ?   40E1v_PH3Ly$Th~CrM*f   167,194  undefined    egNT8l@phJxX;fU{_`iE   undefined   undefined    undefined   undefined
+IDE  2023-6-27_18-32-31  move  if ? do ?   40E1v_PH3Ly$Th~CrM*f   162,187  undefined    egNT8l@phJxX;fU{_`iE   undefined   undefined    undefined   undefined
+IDE  2023-6-27_18-32-31  click  null   undefined   undefined  undefined    undefined   Loop   category    undefined   undefined
+IDE  2023-6-27_18-32-33  click  null   undefined   undefined  undefined    undefined   Music   category    undefined   undefined
+IDE  2023-6-27_18-32-34  create  * Note C7 Duration Whole   4F=mCHuFoplN^wfj:434   undefined  undefined    Km7^QFLSUft=eCp}b@0X   undefined   undefined    undefined   undefined
+IDE  2023-6-27_18-32-34  click  null   undefined   undefined  undefined    Km7^QFLSUft=eCp}b@0X   4F=mCHuFoplN^wfj:434   selected    undefined   undefined
+IDE  2023-6-27_18-32-34  move  * Note C7 Duration Whole   4F=mCHuFoplN^wfj:434   423,367  undefined    Km7^QFLSUft=eCp}b@0X   undefined   undefined    undefined   undefined
+IDE  2023-6-27_18-32-34  move  * Note C7 Duration Whole   4F=mCHuFoplN^wfj:434   412,363  undefined    Km7^QFLSUft=eCp}b@0X   undefined   undefined    undefined   undefined
+IDE  2023-6-27_18-32-36  delete  null   o~i-^yNYf,?E$S]chU.f   undefined  undefined    2*F{!xO2yT%extv)-u-B   undefined   undefined    undefined   undefined
+IDE  2023-6-27_18-32-36  delete  null   40E1v_PH3Ly$Th~CrM*f   undefined  undefined    2*F{!xO2yT%extv)-u-B   undefined   undefined    undefined   undefined
+IDE  2023-6-27_18-32-36  click  null   undefined   undefined  undefined    2*F{!xO2yT%extv)-u-B   null   selected    undefined   undefined
+IDE  2023-6-27_18-32-36  delete  null   4F=mCHuFoplN^wfj:434   undefined  undefined    2*F{!xO2yT%extv)-u-B   undefined   undefined    undefined   undefined
