@@ -20,3 +20,20 @@ IDE  2023-6-27_18-32-36  delete  null   o~i-^yNYf,?E$S]chU.f   undefined  undefi
 IDE  2023-6-27_18-32-36  delete  null   40E1v_PH3Ly$Th~CrM*f   undefined  undefined    2*F{!xO2yT%extv)-u-B   undefined   undefined    undefined   undefined
 IDE  2023-6-27_18-32-36  click  null   undefined   undefined  undefined    2*F{!xO2yT%extv)-u-B   null   selected    undefined   undefined
 IDE  2023-6-27_18-32-36  delete  null   4F=mCHuFoplN^wfj:434   undefined  undefined    2*F{!xO2yT%extv)-u-B   undefined   undefined    undefined   undefined
+IDE  2023-6-28_7-55-22  move  if ? do ? else ?   cIJ@YHkL]+:16|fxVTg`   312,212  undefined    oYQzf1k2lM*N,ag0PQ(r   undefined   undefined    undefined   undefined
+IDE  TimeStamp   Status  BlockName   BlockID NewCoordinate   NewParentID Group   NewValue    Element Name    NewInputName
+IDE    2023-6-28_7-55-22  create  if ? do ? else ?   cIJ@YHkL]+:16|fxVTg`   undefined  undefined    oYQzf1k2lM*N,ag0PQ(r   undefined   undefined    undefined   undefined
+IDE  2023-6-28_7-55-22  create  Clear LED 16x8   pI|.:L.t8tK[K2@KTUO_   undefined  undefined    oYQzf1k2lM*N,ag0PQ(r   undefined   undefined    undefined   undefined
+IDE  2023-6-28_7-55-22  move  Clear LED 16x8   pI|.:L.t8tK[K2@KTUO_   37,288  undefined    oYQzf1k2lM*N,ag0PQ(r   undefined   undefined    undefined   undefined
+IDE  2023-6-28_7-55-24  click  null   undefined   undefined  undefined    undefined   Loop   category    undefined   undefined
+IDE  2023-6-28_7-55-25  click  null   undefined   undefined  undefined    undefined   Logic   category    undefined   undefined
+IDE  2023-6-28_7-55-28  click  null   undefined   undefined  undefined    undefined   I/O   category    undefined   undefined
+IDE  2023-6-28_7-55-32  click  null   undefined   undefined  undefined    55lzNW[b$?4)Fm2gn+:E   i{{tvow!+]f3h~At]EBK   selected    undefined   undefined
+IDE  2023-6-28_7-55-32  create  * Write Output 1 Status Off   i{{tvow!+]f3h~At]EBK   undefined  undefined    55lzNW[b$?4)Fm2gn+:E   undefined   undefined    undefined   undefined
+IDE  2023-6-28_7-55-33  connect  * Write Output 1 Status Off   i{{tvow!+]f3h~At]EBK   undefined  cIJ@YHkL]+:16|fxVTg`    55lzNW[b$?4)Fm2gn+:E   undefined   undefined    undefined   ELSE
+IDE  2023-6-28_7-55-34  click  null   undefined   undefined  undefined    undefined   null   selected    undefined   undefined
+IDE  TimeStamp   Status  BlockName   BlockID NewCoordinate   NewParentID Group   NewValue    Element Name    NewInputName
+IDE    2023-6-28_8-20-13  create  if ? do ? else * Write Output 1 Status Off   cIJ@YHkL]+:16|fxVTg`   undefined  undefined    kXMY=?2`k:[z6ksi1xv4   undefined   undefined    undefined   undefined
+IDE  2023-6-28_8-20-13  move  if ? do ? else * Write Output 1 Status Off   cIJ@YHkL]+:16|fxVTg`   312,212  undefined    kXMY=?2`k:[z6ksi1xv4   undefined   undefined    undefined   undefined
+IDE  2023-6-28_8-20-13  create  Clear LED 16x8   pI|.:L.t8tK[K2@KTUO_   undefined  undefined    kXMY=?2`k:[z6ksi1xv4   undefined   undefined    undefined   undefined
+IDE  2023-6-28_8-20-13  move  Clear LED 16x8   pI|.:L.t8tK[K2@KTUO_   37,288  undefined    kXMY=?2`k:[z6ksi1xv4   undefined   undefined    undefined   undefined

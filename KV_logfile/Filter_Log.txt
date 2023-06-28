@@ -1,7 +1,0 @@
-IDE  TimeStamp  Status  BlockName  BlockID  ID  NewParentID  Element  NewInputName  Node 
-IDE  2023-6-27_18-32-29  create  math_variables_set  NA00000000  0    {"field":{"VAR":"E,Z67E+V)GbSxu?r!UXp"},"mutation":""}    CHILD,VALUE 
-IDE  2023-6-27_18-32-30  create  controls_if  LG01010100  1    {"field":{},"mutation":""}    CHILD,IF0,DO0 
-IDE  2023-6-27_18-32-34  create  music_note  MS01370100  2    {"field":{"NOTE":"36","DURATION":"0"},"mutation":""}    CHILD 
-IDE  2023-6-27_18-32-36  delete  math_variables_set  NA00000000  0    {"field":{"VAR":"E,Z67E+V)GbSxu?r!UXp"},"mutation":""}     
-IDE  2023-6-27_18-32-36  delete  controls_if  LG01010100  1    {"field":{},"mutation":""}     
-IDE  2023-6-27_18-32-36  delete  music_note  MS01370100  2    {"field":{"NOTE":"36","DURATION":"0"},"mutation":""}     
