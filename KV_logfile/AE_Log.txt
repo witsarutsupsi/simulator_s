@@ -37,3 +37,18 @@ IDE    2023-6-28_8-20-13  create  if ? do ? else * Write Output 1 Status Off   c
 IDE  2023-6-28_8-20-13  move  if ? do ? else * Write Output 1 Status Off   cIJ@YHkL]+:16|fxVTg`   312,212  undefined    kXMY=?2`k:[z6ksi1xv4   undefined   undefined    undefined   undefined
 IDE  2023-6-28_8-20-13  create  Clear LED 16x8   pI|.:L.t8tK[K2@KTUO_   undefined  undefined    kXMY=?2`k:[z6ksi1xv4   undefined   undefined    undefined   undefined
 IDE  2023-6-28_8-20-13  move  Clear LED 16x8   pI|.:L.t8tK[K2@KTUO_   37,288  undefined    kXMY=?2`k:[z6ksi1xv4   undefined   undefined    undefined   undefined
+IDE  TimeStamp   Status  BlockName   BlockID NewCoordinate   NewParentID Group   NewValue    Element Name    NewInputName
+IDE    2023-6-29_12-0-49  create  if ? do ? else * Write Output 1 Status Off   cIJ@YHkL]+:16|fxVTg`   undefined  undefined    ]XjzFJvao%6TWFE*UzO{   undefined   undefined    undefined   undefined
+IDE  2023-6-29_12-0-49  move  if ? do ? else * Write Output 1 Status Off   cIJ@YHkL]+:16|fxVTg`   312,212  undefined    ]XjzFJvao%6TWFE*UzO{   undefined   undefined    undefined   undefined
+IDE  2023-6-29_12-0-49  move  Clear LED 16x8   pI|.:L.t8tK[K2@KTUO_   37,288  undefined    ]XjzFJvao%6TWFE*UzO{   undefined   undefined    undefined   undefined
+IDE  2023-6-29_12-0-49  create  Clear LED 16x8   pI|.:L.t8tK[K2@KTUO_   undefined  undefined    ]XjzFJvao%6TWFE*UzO{   undefined   undefined    undefined   undefined
+IDE  TimeStamp   Status  BlockName   BlockID NewCoordinate   NewParentID Group   NewValue    Element Name    NewInputName
+IDE    2023-6-29_13-19-12  create  Forever if * Light Level Sensor ‏≤ 40 do * Write USB Status On else * Write USB Status Off   @i]p|uvdh*RNC7tkYKK`   undefined  undefined    ??-a6:/l?EQigRSXkc4!   undefined   undefined    undefined   undefined
+IDE  2023-6-29_13-19-12  move  Forever if * Light Level Sensor ‏≤ 40 do * Write USB Status On else * Write USB Status Off   @i]p|uvdh*RNC7tkYKK`   263,38  undefined    ??-a6:/l?EQigRSXkc4!   undefined   undefined    undefined   undefined
+IDE  2023-6-29_13-19-13  click  null   undefined   undefined  undefined    undefined   @i]p|uvdh*RNC7tkYKK`   selected    undefined   undefined
+IDE  2023-6-29_13-19-13  move  Forever if * Light Level Sensor ‏≤ 40 do * Write USB Status On else * Write USB Status Off   @i]p|uvdh*RNC7tkYKK`   382,230  undefined    kU0L0Gt.;uel.DOjU;6#   undefined   undefined    undefined   undefined
+IDE  2023-6-29_13-19-13  move  Forever if * Light Level Sensor ‏≤ 40 do * Write USB Status On else * Write USB Status Off   @i]p|uvdh*RNC7tkYKK`   388,237  undefined    kU0L0Gt.;uel.DOjU;6#   undefined   undefined    undefined   undefined
+IDE  2023-6-29_13-19-18  click  null   undefined   undefined  undefined    undefined   null   selected    undefined   undefined
+IDE  TimeStamp   Status  BlockName   BlockID NewCoordinate   NewParentID Group   NewValue    Element Name    NewInputName
+IDE    2023-6-29_13-26-9  create  Forever if * Light Level Sensor ‏≤ 40 do * Write USB Status On else * Write USB Status Off   @i]p|uvdh*RNC7tkYKK`   undefined  undefined    EQX6]Ax-:%oiNf4H%A2O   undefined   undefined    undefined   undefined
+IDE  2023-6-29_13-26-9  move  Forever if * Light Level Sensor ‏≤ 40 do * Write USB Status On else * Write USB Status Off   @i]p|uvdh*RNC7tkYKK`   388,237  undefined    EQX6]Ax-:%oiNf4H%A2O   undefined   undefined    undefined   undefined
