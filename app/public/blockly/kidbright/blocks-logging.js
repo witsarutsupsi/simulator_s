@@ -16,7 +16,7 @@ const handle_logging = function(WS, Json) {
     var block = ws.getBlockById(Json.blockId);
     var blockconnect = ws.getBlockById(Json.newParentId);
 
-    filtering.updateChange(Json,block);
+    filtering.updateChange(Json,block,ws);
 
 
     /*switch(Json.type){
@@ -170,10 +170,10 @@ class logText
 
 class block
 {
-    constructor(ID,BlockName,BlockID){
+    constructor(ID,BlockName){
         this.ID         = ID;       // key assigned to block
         this.type       = BlockName;     // block type (ex* Basic 16x4 led)
-        this.BlockID    = BlockID;
+        this.BlockID    = "";
         this.element    = {
             "field":{},
             "mutation":""
@@ -184,13 +184,33 @@ class block
     }
 }
 
+class variable
+{
+    constructor(ID,type,varId,varName,varType){
+        this.ID         = ID;           //ID for Variable (ordering with block)
+        this.varID      = varId;        // Record varID
+        this.varName    = varName;      // Variable Name (Changable)
+        this.element    = {
+            "name":"",
+        };
+        this.varType    = varType;      // Variable Type
+        this.type       = type;         // Event type
+    }
+}
+
 class Log_filter{
     
     constructor(){ // Initialize
         this.debug = false;
         this.running_ID = 0
+
+        //blockly record
         this.blocks = {}
         this.matchBlockID_2_ID ={}
+
+        //variable record
+        this.variables = {}
+        this.matchvariableID_2_ID ={}
         this.logger = new logText('/FAE');
     };
 
@@ -211,7 +231,7 @@ class Log_filter{
             ConnectPoint.push("CHILD"); 
         }
 
-        // Get possible Connection
+        // Get possible Connection and Field
         for(let i=0; i< InputList.length; i++){
             if(InputList[i].name != ""){
                 ConnectPoint.push(InputList[i].name); 
@@ -220,15 +240,19 @@ class Log_filter{
             if(InputList[i].fieldRow.length >0){
                 for(let j=0; j< InputList[i].fieldRow.length; j++){
                     var focus_Ob = InputList[i].fieldRow[j];
-                    if(focus_Ob.name != undefined && focus_Ob.text_ != undefined && focus_Ob.state_ == undefined && focus_Ob.value_ == undefined){ // FieldTextInput, Number
+                    if(focus_Ob.name != undefined && focus_Ob.colour_ != undefined){ // FieldColor
+                        //console.log("Color",focus_Ob.name,focus_Ob.colour_);
+                        InputFound[focus_Ob.name] = focus_Ob.colour_;
+                    }
+                    else if(focus_Ob.name != undefined && focus_Ob.text_ != undefined && focus_Ob.state_ == undefined && focus_Ob.value_ == undefined){ // FieldTextInput, Number
                         //console.log("Input",focus_Ob.name,focus_Ob.text_);
                         InputFound[focus_Ob.name] = focus_Ob.text_;
                     }
-                    if(focus_Ob.name != undefined && focus_Ob.state_ != undefined){ // FieldCheckbox
+                    else if(focus_Ob.name != undefined && focus_Ob.state_ != undefined){ // FieldCheckbox
                         //console.log("checkbox",focus_Ob.name,focus_Ob.state_);
                         InputFound[focus_Ob.name] = focus_Ob.state_;
                     }
-                    if(focus_Ob.name != undefined && focus_Ob.text_ != undefined && focus_Ob.value_ != undefined){ // dropdown
+                    else if(focus_Ob.name != undefined && focus_Ob.text_ != undefined && focus_Ob.value_ != undefined){ // dropdown
                         //console.log("Inputdropdown",focus_Ob.name,focus_Ob.value_);
                         InputFound[focus_Ob.name] = focus_Ob.value_;
                     }
@@ -243,7 +267,7 @@ class Log_filter{
         return [ConnectPoint, element];
     }
 
-    _getBlockID_by_block(block)
+    _getBlockID_by_block(block,event)
     {
         var blockName = block.type;
         var blockField= block.element["field"];
@@ -252,20 +276,19 @@ class Log_filter{
 
         // BASIC TOOLBOXS
         blockID = "BS"
-        if(blockName == "basic_led16x8"){               blockID += "01000000";  return blockID;}
-        else if(blockName == "basic_led16x8_clr"){      blockID += "02000000";  return blockID;}
-        else if(blockName == "basic_led16x8_2chars"){   blockID += "03000000";  return blockID;}
-        else if(blockName == "basic_led16x8_scroll"){   blockID += "04000000";  return blockID;}
-        else if(blockName == "basic_led16x8_scroll_when_ready"){blockID += "05000000";  return blockID;}
-        else if(blockName == "basic_delay"){            blockID += "06000000";  return blockID;}
-        else if(blockName == "basic_forever"){          blockID += "07000000";  return blockID;}
-        else if(blockName == "basic_string"){           blockID += "08000000";  return blockID;}
+        if(blockName == "basic_led16x8"){               blockID += "0100";  return blockID;}
+        else if(blockName == "basic_led16x8_clr"){      blockID += "0200";  return blockID;}
+        else if(blockName == "basic_led16x8_2chars"){   blockID += "0300";  return blockID;}
+        else if(blockName == "basic_led16x8_scroll"){   blockID += "0400";  return blockID;}
+        else if(blockName == "basic_led16x8_scroll_when_ready"){blockID += "0500";  return blockID;}
+        else if(blockName == "basic_delay"){            blockID += "0600";  return blockID;}
+        else if(blockName == "basic_forever"){          blockID += "0700";  return blockID;}
+        else if(blockName == "basic_string"){           blockID += "0800";  return blockID;}
 
         // MATH TOOLBOXS
         blockID = "MA"
         if(blockName == "math_number"){
-            blockID += "01";
-            blockID += "000000";
+            blockID += "0100";
             return blockID;
         }
         else if(blockName == "math_arithmetic"){
@@ -275,12 +298,11 @@ class Log_filter{
             else if(blockField["OP"] == "MULTIPLY"){    blockID += "03";}
             else if(blockField["OP"] == "DIVIDE"){      blockID += "04";}
             else if(blockField["OP"] == "MODULO"){      blockID += "05";}
-            blockID += "0000";
             return blockID;
         }
-        else if(blockName == "math_variable_set"){       blockID += "03000000";  return blockID;}
-        else if(blockName == "math_variables_get"){      blockID += "04000000";  return blockID;}
-        else if(blockName == "math_pow"){                blockID += "05000000";  return blockID;}
+        else if(blockName == "math_variable_set"){       blockID += "0300";  return blockID;}
+        else if(blockName == "math_variables_get"){      blockID += "0400";  return blockID;}
+        else if(blockName == "math_pow"){                blockID += "0500";  return blockID;}
         else if(blockName == "math_single"){
             blockID += "06";
             if(blockField["OP"] == "ROOT"){              blockID += "01";}
@@ -290,7 +312,6 @@ class Log_filter{
             else if(blockField["OP"] == "LOG10"){        blockID += "05";}
             else if(blockField["OP"] == "EXP"){          blockID += "06";}
             else if(blockField["OP"] == "POW10"){        blockID += "07";}
-            blockID += "0000";
             return blockID;
         }
         else if(blockName == "math_trig"){
@@ -301,7 +322,6 @@ class Log_filter{
             else if(blockField["OP"] == "ASIN"){         blockID += "04";}
             else if(blockField["OP"] == "ACOS"){         blockID += "05";}
             else if(blockField["OP"] == "ATAN"){         blockID += "06";}
-            blockID += "0000";
             return blockID;
         }
         else if(blockName == "math_round"){
@@ -309,32 +329,28 @@ class Log_filter{
             if(blockField["OP"] == "ROUND"){            blockID += "01";}
             else if(blockField["OP"] == "ROUNDUP"){     blockID += "02";}
             else if(blockField["OP"] == "ROUNDDOWN"){   blockID += "03";}
-            blockID += "0000";
             return blockID;
         }
         else if(blockName == "convert_ra_de"){
             blockID += "09";
             if(blockField["OP"] == "RA_TO_DE"){         blockID += "01";}
             else if(blockField["OP"] == "DE_TO_RA"){    blockID += "02";}
-            blockID += "0000";
             return blockID;
         }
-        else if(blockName == "math_random_int"){        blockID += "10000000";  return blockID;}
+        else if(blockName == "math_random_int"){        blockID += "1000";  return blockID;}
         else if(blockName == "math_number_property"){
             blockID += "11";
             if(blockField["PROPERTY"] == "EVEN"){       blockID += "01";}
             else if(blockField["PROPERTY"] == "ODD"){   blockID += "02";}
             else if(blockField["PROPERTY"] == "PRIME"){ blockID += "03";}
-            else if(blockField["PROPERTY"] == "POSITIVE"){   blockID += "04";}
-            else if(blockField["PROPERTY"] == "NEGATIVE"){   blockID += "05";}
-            blockID += "0000";
+            else if(blockField["PROPERTY"] == "POSITIVE"){blockID += "04";}
+            else if(blockField["PROPERTY"] == "NEGATIVE"){blockID += "05";}
             return blockID;
         }
 
         //LOGIC TOOLBOXS
         blockID = "LG"
-        if(blockName == "controls_if"){
-            blockID += "01";
+        if(blockName == "controls_if"){ // This contain some special case
             var IF_count = 0;
             var DO_count = 0;
             var ELSE_count = 0;
@@ -345,10 +361,15 @@ class Log_filter{
                 else if(node.slice(0, 2) == "DO"){DO_count++;}
                 else if(node.slice(0, 4) == "ELSE"){ELSE_count++;}
             }
-            blockID += String(IF_count).padStart(2,'0');
-            blockID += String(DO_count).padStart(2,'0');
-            blockID += String(ELSE_count).padStart(2,'0');
-            return blockID;
+            if(event == "create"){ // new object
+                if(ELSE_count>0){blockID += "0200"}
+                else{blockID += "0100"}
+                return blockID;
+            }
+            else
+            {
+                return block.BlockID // return previous BlockID name
+            }
         }
         if(blockName == "logic_compare"){
             blockID += "03";
@@ -358,29 +379,26 @@ class Log_filter{
             else if(blockField["OP"] == "LTE"){        blockID += "04";}
             else if(blockField["OP"] == "GT"){         blockID += "05";}
             else if(blockField["OP"] == "GTE"){        blockID += "06";}
-            blockID += "0000";
             return blockID;
         }
         else if(blockName == "logic_operation"){
             blockID += "04";
             if(blockField["OP"] == "AND"){              blockID += "01";}
             else if(blockField["OP"] == "OR"){          blockID += "02";}
-            blockID += "0000";
             return blockID;
         }
-        else if(blockName == "logic_negate"){           blockID += "05000000";  return blockID;}
+        else if(blockName == "logic_negate"){           blockID += "0500";  return blockID;}
         else if(blockName == "logic_boolean"){
             blockID += "06";
             if(blockField["BOOL"] == "TRUE"){           blockID += "01";}
             else if(blockField["BOOL"] == "FALSE"){     blockID += "02";}    
-            blockID += "0000";
             return blockID;        
         }
-        else if(blockName == "logic_led16x8_scroll_ready"){blockID += "07000000";  return blockID;}
-        else if(blockName == "logic_sw1_pressed"){      blockID += "08000000";  return blockID;}
-        else if(blockName == "logic_sw1_released"){     blockID += "09000000";  return blockID;}
-        else if(blockName == "logic_sw2_pressed"){      blockID += "10000000";  return blockID;}
-        else if(blockName == "logic_sw2_released"){     blockID += "11000000";  return blockID;}
+        else if(blockName == "logic_led16x8_scroll_ready"){blockID += "0700";  return blockID;}
+        else if(blockName == "logic_sw1_pressed"){      blockID += "0800";  return blockID;}
+        else if(blockName == "logic_sw1_released"){     blockID += "0900";  return blockID;}
+        else if(blockName == "logic_sw2_pressed"){      blockID += "1000";  return blockID;}
+        else if(blockName == "logic_sw2_released"){     blockID += "1100";  return blockID;}
         
 
         // LOOP TOOLBOXS
@@ -389,180 +407,116 @@ class Log_filter{
             blockID += "01";
             if(blockField["MODE"] == "WHILE"){          blockID += "01";}
             else if(blockField["MODE"] == "UNTIL"){     blockID += "02";}
-            blockID += "0000";
             return blockID;
         }
         else if(blockName == "loop_break"){
-            blockID += "02";
-            blockID += "000000";
+            blockID += "0200";
             return blockID;
         }
         else if(blockName == "loop_continue"){
-            blockID += "03";
-            blockID += "000000";
+            blockID += "0300";
             return blockID;
         }
 
         // WAIT TOOLBOXS
         blockID = "WA"
-        if(blockName == "wait_led_matrix_ready"){       blockID += "01000000";  return blockID;}
-        else if(blockName == "wait_sw1_pressed"){       blockID += "02000000";  return blockID;}
-        else if(blockName == "wait_sw1_released"){      blockID += "03000000";  return blockID;}
-        else if(blockName == "wait_sw2_pressed"){       blockID += "04000000";  return blockID;}
-        else if(blockName == "wait_sw2_released"){      blockID += "05000000";  return blockID;}
+        if(blockName == "wait_led_matrix_ready"){       blockID += "0100";  return blockID;}
+        else if(blockName == "wait_sw1_pressed"){       blockID += "0200";  return blockID;}
+        else if(blockName == "wait_sw1_released"){      blockID += "0300";  return blockID;}
+        else if(blockName == "wait_sw2_pressed"){       blockID += "0400";  return blockID;}
+        else if(blockName == "wait_sw2_released"){      blockID += "0500";  return blockID;}
 
         // MUSIC TOOLBOXS
         blockID = "MS"
         if(blockName == "music_note"){
-            blockID += "01";
-            blockID += String(parseInt(blockField["NOTE"])+1).padStart(2,'0');      // NOTE field
-            blockID += String(parseInt(blockField["DURATION"])+1).padStart(2,'0');  // DURATION field
-            blockID += "00";
+            blockID += "0100";
             return blockID;
         }
         else if(blockName == "music_rest"){
-            blockID += "02";
-            blockID += String(parseInt(blockField["DURATION"])+1).padStart(2,'0');  // DURATION field
-            blockID += "0000";
+            blockID += "0200";
             return blockID;
         }
         else if(blockName == "music_scale"){
-            blockID += "03";
-            blockID += String(parseInt(blockField["SCALE"])+1).padStart(2,'0');     // SCALE field
-            blockID += String(parseInt(blockField["NOTE"])+1).padStart(2,'0');      // NOTE field
-            blockID += String(parseInt(blockField["DURATION"])+1).padStart(2,'0');  // DURATION field
+            blockID += "0300";
             return blockID;
         }
-        else if(blockName == "music_set_volume"){blockID += "04000000"; return blockID;}
-        else if(blockName == "music_get_volume"){blockID += "05000000"; return blockID;}
+        else if(blockName == "music_set_volume"){blockID += "0400"; return blockID;}
+        else if(blockName == "music_get_volume"){blockID += "0500"; return blockID;}
 
         // SENSOR TOOLBOXS
         blockID = "SS"
-        if(blockName == "sensor_ldr"){          blockID += "01000000"; return blockID;}
-        else if(blockName == "sensor_lm73"){    blockID += "02000000"; return blockID;}
-        else if(blockName == "sensor_switch1"){ blockID += "03000000"; return blockID;}
-        else if(blockName == "sensor_switch2"){ blockID += "04000000"; return blockID;}
+        if(blockName == "sensor_ldr"){          blockID += "0100"; return blockID;}
+        else if(blockName == "sensor_lm73"){    blockID += "0200"; return blockID;}
+        else if(blockName == "sensor_switch1"){ blockID += "0300"; return blockID;}
+        else if(blockName == "sensor_switch2"){ blockID += "0400"; return blockID;}
 
         // CLOCK TOOLBOXS
         blockID = "CL"
-        if(blockName == "rtc_get"){             blockID += "01000000"; return blockID;}
-        else if(blockName == "rtc_get_date"){   blockID += "02000000"; return blockID;}
-        else if(blockName == "rtc_get_time"){   blockID += "03000000"; return blockID;}
-        else if(blockName == "rtc_get_day"){    blockID += "04000000"; return blockID;}
-        else if(blockName == "rtc_get_month"){  blockID += "05000000"; return blockID;}
-        else if(blockName == "rtc_get_year"){   blockID += "06000000"; return blockID;}
-        else if(blockName == "rtc_get_hour"){   blockID += "07000000"; return blockID;}
-        else if(blockName == "rtc_get_minute"){ blockID += "08000000"; return blockID;}
-        else if(blockName == "rtc_get_second"){ blockID += "09000000"; return blockID;}
+        if(blockName == "rtc_get"){             blockID += "0100"; return blockID;}
+        else if(blockName == "rtc_get_date"){   blockID += "0200"; return blockID;}
+        else if(blockName == "rtc_get_time"){   blockID += "0300"; return blockID;}
+        else if(blockName == "rtc_get_day"){    blockID += "0400"; return blockID;}
+        else if(blockName == "rtc_get_month"){  blockID += "0500"; return blockID;}
+        else if(blockName == "rtc_get_year"){   blockID += "0600"; return blockID;}
+        else if(blockName == "rtc_get_hour"){   blockID += "0700"; return blockID;}
+        else if(blockName == "rtc_get_minute"){ blockID += "0800"; return blockID;}
+        else if(blockName == "rtc_get_second"){ blockID += "0900"; return blockID;}
 
         // I/O TOOLBOXS
         blockID = "IO"
-        if(blockName == "output_write"){        
-            blockID += "01";
-            blockID += String(blockField["OUTPUT"]).padStart(2,'0');            // OUTPUT field
-            blockID += String(parseInt(blockField["STATUS"])+1).padStart(2,'0');// STATUS field
-            blockID += "00";
-            return blockID;
-        }
-        else if(blockName == "output_toggle"){
-            blockID += "02";
-            blockID += String(blockField["OUTPUT"]).padStart(2,'0');            // OUTPUT field
-            blockID += "0000";
-            return blockID;
-        }
-        else if(blockName == "output_read"){
-            blockID += "03";
-            blockID += String(blockField["OUTPUT"]).padStart(2,'0');            // OUTPUT field
-            blockID += "0000";
-            return blockID;
-        }
-        else if(blockName == "usbsw_write"){
-            blockID += "04";
-            blockID += String(parseInt(blockField["STATUS"])+1).padStart(2,'0');// STATUS field
-            blockID += "0000";
-            return blockID;
-        }
-        else if(blockName == "usbsw_toggle"){   blockID += "05000000"; return blockID;}
-        else if(blockName == "usbsw_read"){     blockID += "06000000"; return blockID;}
-        else if(blockName == "input_read"){
-            blockID += "07";
-            blockID += String(blockField["INPUT"]).padStart(2,'0');            // INPUT field
-            blockID += "0000";
-            return blockID;
-        }
+        if(blockName == "output_write"){        blockID += "0100"; return blockID;}
+        else if(blockName == "output_toggle"){  blockID += "0200"; return blockID;}
+        else if(blockName == "output_read"){    blockID += "0300"; return blockID;}
+        else if(blockName == "usbsw_write"){    blockID += "0400"; return blockID;}
+        else if(blockName == "usbsw_toggle"){   blockID += "0500"; return blockID;}
+        else if(blockName == "usbsw_read"){     blockID += "0600"; return blockID;}
+        else if(blockName == "input_read"){     blockID += "0700"; return blockID;}
 
         // Advance TOOLBOXS
         blockID = "AV"
-        if(blockName == "advance_task"){        blockID += "01000000"; return blockID;}
-        else if(blockName == "advance_task"){   blockID += "02000000"; return blockID;}
-        else if(blockName == "call_function"){  blockID += "03000000"; return blockID;}
+        if(blockName == "advance_task"){        blockID += "0100"; return blockID;}
+        else if(blockName == "advance_task"){   blockID += "0200"; return blockID;}
+        else if(blockName == "call_function"){  blockID += "0300"; return blockID;}
 
         // Variable TOOLBOXS
         blockID = "VR"
-        if(blockName == "variables_set"){       blockID += "01000000"; return blockID;}
-        else if(blockName == "math_change"){    blockID += "02000000"; return blockID;}
-        else if(blockName == "variables_get"){  blockID += "03000000"; return blockID;}        
+        if(blockName == "variables_set"){       blockID += "0100"; return blockID;}
+        else if(blockName == "math_change"){    blockID += "0200"; return blockID;}
+        else if(blockName == "variables_get"){  blockID += "0300"; return blockID;}        
 
         // TEXT TOOLBOXS
         blockID = "TE"
-        if(blockName == "string_length"){       blockID += "02000000"; return blockID;}
-        else if(blockName == "string_with_number"){blockID += "03000000"; return blockID;}
-        else if(blockName == "string_join"){    blockID += "04000000"; return blockID;} 
-        else if(blockName == "string_charAt"){  blockID += "05000000"; return blockID;} 
-        else if(blockName == "string_substring"){blockID += "06000000"; return blockID;} 
+        if(blockName == "string_length"){       blockID += "0200"; return blockID;}
+        else if(blockName == "string_with_number"){blockID += "0300"; return blockID;}
+        else if(blockName == "string_join"){    blockID += "0400"; return blockID;} 
+        else if(blockName == "string_charAt"){  blockID += "0500"; return blockID;} 
+        else if(blockName == "string_substring"){blockID += "0600"; return blockID;} 
          
 
         // LIST TOOLBOXS
         blockID = "LI"
-        if(blockName == "lists_create_with"){           blockID += "01000000"; return blockID;}
-        else if(blockName == "list_get_length"){        blockID += "02000000"; return blockID;}
-        else if(blockName == "list_get_index"){         blockID += "03000000"; return blockID;}
-        else if(blockName == "list_set_index"){         blockID += "04000000"; return blockID;}
-        else if(blockName == "list_insert_first"){      blockID += "05000000"; return blockID;}
-        else if(blockName == "list_insert_last"){       blockID += "06000000"; return blockID;}
-        else if(blockName == "list_insert_index"){      blockID += "07000000"; return blockID;}
-        else if(blockName == "list_get_text"){          blockID += "08000000"; return blockID;}
+        if(blockName == "lists_create_with"){           blockID += "0100"; return blockID;}
+        else if(blockName == "list_get_length"){        blockID += "0200"; return blockID;}
+        else if(blockName == "list_get_index"){         blockID += "0300"; return blockID;}
+        else if(blockName == "list_set_index"){         blockID += "0400"; return blockID;}
+        else if(blockName == "list_insert_first"){      blockID += "0500"; return blockID;}
+        else if(blockName == "list_insert_last"){       blockID += "0600"; return blockID;}
+        else if(blockName == "list_insert_index"){      blockID += "0700"; return blockID;}
+        else if(blockName == "list_get_text"){          blockID += "0800"; return blockID;}
         
         // KB IOT (Gauge) TOOLBOXS
         blockID = "GA"
-        if(blockName == "gauge_iot"){
-            blockID += "01";
-            if(blockField["GAUGE_SELECTION"] == "G1"){      blockID += "010000"; return blockID;}
-            else if(blockField["GAUGE_SELECTION"] == "G2"){ blockID += "020000"; return blockID;}
-        }
-        else if(blockName == "gauge_title"){
-            blockID += "02";
-            if(blockField["GAUGE_SELECTION"] == "G1"){      blockID += "010000"; return blockID;}
-            else if(blockField["GAUGE_SELECTION"] == "G2"){ blockID += "020000"; return blockID;}
-        }
-        else if(blockName == "gauge_unit"){
-            blockID += "03";
-            if(blockField["GAUGE_SELECTION"] == "G1"){      blockID += "010000"; return blockID;}
-            else if(blockField["GAUGE_SELECTION"] == "G2"){ blockID += "020000"; return blockID;}
-        }
-        else if(blockName == "gauge_color"){
-            blockID += "04";
-            if(blockField["GAUGE_SELECTION"] == "G1"){      blockID += "010000"; return blockID;}
-            else if(blockField["GAUGE_SELECTION"] == "G2"){ blockID += "020000"; return blockID;}
-        }
-        else if(blockName == "gauge_minmax"){
-            blockID += "05";
-            if(blockField["GAUGE_SELECTION"] == "G1"){      blockID += "010000"; return blockID;}
-            else if(blockField["GAUGE_SELECTION"] == "G2"){ blockID += "020000"; return blockID;}
-        }
+        if(blockName == "gauge_iot"){                   blockID += "0100"; return blockID;}
+        else if(blockName == "gauge_title"){            blockID += "0200"; return blockID;}
+        else if(blockName == "gauge_unit"){             blockID += "0300"; return blockID;}
+        else if(blockName == "gauge_color"){            blockID += "0400"; return blockID;}
+        else if(blockName == "gauge_minmax"){           blockID += "0500"; return blockID;}
         
         // KB IOT (Graph) TOOLBOXS
         blockID = "GR"
-        if(blockName == "feed_iot"){
-            blockID += "01";
-            if(blockField["FEED_SELECTION"] == "F1"){      blockID += "010000"; return blockID;}
-            else if(blockField["FEED_SELECTION"] == "F2"){ blockID += "020000"; return blockID;}
-        }
-        else if(blockName == "feed_main_titile"){          blockID += "02000000"; return blockID;}
-        else if(blockName == "feed_color"){
-            if(blockField["FEED_SELECTION"] == "F1"){      blockID += "010000"; return blockID;}
-            else if(blockField["FEED_SELECTION"] == "F2"){ blockID += "020000"; return blockID;}
-        }
+        if(blockName == "feed_iot"){                    blockID += "0100"; return blockID;}
+        else if(blockName == "feed_main_titile"){       blockID += "0200"; return blockID;}
+        else if(blockName == "feed_color"){             blockID += "0300"; return blockID;}
 
         // KB IOT (Plugin) TOOLBOXS
         blockID = "PI"
@@ -570,7 +524,80 @@ class Log_filter{
         return "NA00000000";
     }
 
-    filter_create(Json,blockObject){
+    _modifyMathVariables(block,event,Json){
+        const interestingItems = new Set(['math_variables_set', 'math_variables_get']);
+        const isItemInSet = interestingItems.has(block.type);
+        if(isItemInSet && event=='create'){
+            //create x variable for startup filter_create_var(Json)
+            var create_new_var = this.filter_create_var(
+                {
+                    "type":'var_create',
+                    "varId": block.element.field.VAR,
+                    "varName": 'x',
+                    "varType": "",
+                })
+
+            if(create_new_var){
+                // ID must be shifting by 1
+                var oldID = this.running_ID-1;
+                var newID = this.running_ID;
+                
+                block.ID = this.running_ID;
+                this.matchBlockID_2_ID[Json.blockId] = this.running_ID;
+                this.blocks[newID] = this.blocks[oldID];
+                delete this.blocks[oldID];
+            }
+        }
+        if(isItemInSet){
+            // revise "field" value
+            block.element.field.VAR = this.variables[this.matchvariableID_2_ID[block.element.field.VAR]].varName;
+            }
+    }
+            
+    _modifyVariables(block){ // this function changes VarID in field into VarName instead
+        const interestingItems = new Set(['variables_set', 'math_change', 'variables_get']);
+        const isItemInSet = interestingItems.has(block.type);
+        if(isItemInSet){
+            const variable_key = block.element["field"]["VAR"];
+            const varName      = this.variables[this.matchvariableID_2_ID[variable_key]].varName;
+
+            //modified VAR poit to Name 
+            block.element["field"]["VAR"] = varName;
+        }
+        return block
+    }
+
+    _modifyMathchange_block(Json,block,Workspace){
+        const interestingItems = new Set(['math_change']);
+        const isItemInSet = interestingItems.has(block.type);
+        if(isItemInSet){
+            var var_block = Workspace.getBlockById(Json.ids[1]);
+            this.filter_create({blockId:Json.ids[1]},var_block,Workspace); // create mathVarBlock
+            this.filter_move({                                             // connected mathVarBlock to math_change
+                blockId         :Json.ids[1],
+                newParentId     :Json.ids[0],
+                newInputName    :"DELTA",
+            });
+        }
+    }
+
+
+    _renameVariable_in_block(block,oldName,newName){ // this function changs old VarName to new Varname cause "var_rename" event
+        const interestingItems = new Set(['variables_set', 'math_change', 'variables_get','math_variables_set', 'math_variables_get'])
+        const isItemInSet = interestingItems.has(block.type)
+        if(isItemInSet){
+            const block_VAR_Name = block.element["field"]["VAR"];
+            if(block_VAR_Name == oldName){
+                //modified VAR oldname to newname
+                block.element["field"]["VAR"] = newName;
+                return true;
+            }
+        }
+        return false
+    }
+
+    filter_create(Json,blockObject,ws){
+        //console.log(Json,blockObject);
         var create = false;
         if(this.matchBlockID_2_ID.hasOwnProperty(Json.blockId)){}
         else{create = true;}
@@ -591,20 +618,24 @@ class Log_filter{
             // passing value into block class
             My_block.element = Block_Element;
             My_block.node    = Block_Node;
+            My_block.BlockID = this._getBlockID_by_block(My_block,"create");
+
+
+            // modified Special case blockly
+            this._modifyMathVariables(My_block,"create",Json)
+            this._modifyVariables(My_block)
 
             // logging Record
             this.logger.record({
-                "Status":"create",
-                "BlockName":My_block.type,
-                "BlockID": this._getBlockID_by_block(My_block),
-                "ID":My_block.ID,
+                "Status"    :"create",
+                "BlockName" :My_block.type,
+                "BlockID"   : My_block.BlockID,
+                "ID"        :My_block.ID,
                 //"NewParentID":"",
-                "Element":My_block.element,
+                "Element"   :My_block.element,
                 //"NewInputName":""
-                "Node":My_block.node,
+                "Node"      :My_block.node,
             });
-
-            let BlockID     = this._getBlockID_by_block(My_block);
             
             if(this.debug){
                 var debugMessage = "";
@@ -612,6 +643,9 @@ class Log_filter{
                 console.log(debugMessage);
             }
             this.running_ID++;
+
+            // Add component in Special case
+            this._modifyMathchange_block(Json,My_block,ws);
         }
         
     }
@@ -628,12 +662,25 @@ class Log_filter{
             let BlockDetail  =  this._get_all_NodeAndElementValue(blockObject);
             var Block_Node   = BlockDetail[0];
             var Block_Element= BlockDetail[1];
+
+            // passing value into block class
             My_block.element = Block_Element;
             My_block.node    = Block_Node;
+            My_block.BlockID = this._getBlockID_by_block(My_block,"change");
 
             // check type of changs
-            if(Json.element == "mutation"){mutationChange = true;}
-            else if(Json.element == "field"){fieldChange = true;}
+            if(Json.element == "mutation"){
+                mutationChange = true;
+                My_block.element["mutation"] = Json.newValue;
+            }
+            else if(Json.element == "field"){
+                fieldChange = true;
+                My_block.element["field"][Json.name] = Json.newValue;
+            }
+
+            // modified Special case blockly
+            this._modifyMathVariables(My_block,"change",Json)
+            this._modifyVariables(My_block)
 
 
             // Update Element
@@ -641,27 +688,26 @@ class Log_filter{
                 My_block.element["mutation"] = Json.newValue;
                 debugMessage += "[" + this.blocks[ID].type + "] change (" + "[field][mutation]" + ")>> " + Json.newValue;
                 this.logger.record({
-                    "Status":"change",
-                    "BlockName":My_block.type,
-                    "BlockID": this._getBlockID_by_block(My_block),
-                    "ID":My_block.ID,
+                    "Status"    :"change",
+                    "BlockName" :My_block.type,
+                    "BlockID"   : My_block.BlockID,
+                    "ID"        :My_block.ID,
                     //"NewParentID":"",
-                    "Element":My_block.element,
+                    "Element"   :My_block.element,
                     //"NewInputName":""
-                    "Node":My_block.node,
+                    "Node"      :My_block.node,
                 });
             }
             else if(fieldChange)
             {
-                My_block.element["field"][Json.name] = Json.newValue;
                 debugMessage += "[" + this.blocks[ID].type + "] change (" + "[field]["+String(Json.name) + "])>> " + Json.newValue;
                 this.logger.record({
-                    "Status":"change",
-                    "BlockName":My_block.type,
-                    "BlockID": this._getBlockID_by_block(My_block),
-                    "ID":My_block.ID,
+                    "Status"    :"change",
+                    "BlockName" :My_block.type,
+                    "BlockID"   : My_block.BlockID,
+                    "ID"        :My_block.ID,
                     //"NewParentID":"",
-                    "Element":My_block.element,
+                    "Element"   :My_block.element,
                     //"NewInputName":""
                 });
             }
@@ -717,10 +763,10 @@ class Log_filter{
                 if(this.debug){console.log(debugMessage);}
 
                 this.logger.record({
-                    "Status":"connect",
-                    "BlockName":My_block.type,
-                    "BlockID": this._getBlockID_by_block(My_block),
-                    "ID":My_block.ID,
+                    "Status"    :"connect",
+                    "BlockName" :My_block.type,
+                    "BlockID"   :My_block.BlockID,
+                    "ID"        :My_block.ID,
                     "NewParentID":My_block.newParentId,
                     //"Element":My_block.element,
                     "NewInputName":My_block.newInputName
@@ -739,10 +785,10 @@ class Log_filter{
                 My_block.newInputName= "";
                 if(this.debug){console.log(debugMessage);}
                 this.logger.record({
-                    "Status":"disconnect",
-                    "BlockName":My_block.type,
-                    "BlockID": this._getBlockID_by_block(My_block),
-                    "ID":My_block.ID,
+                    "Status"    :"disconnect",
+                    "BlockName" :My_block.type,
+                    "BlockID"   :My_block.BlockID,
+                    "ID"        :My_block.ID,
                     "NewParentID":My_block.newParentId,
                     //"Element":My_block.element,
                     "NewInputName":My_block.newInputName
@@ -761,12 +807,12 @@ class Log_filter{
             var debugMessage    = "";
             debugMessage += "["+String(My_block.type) + "] is deleted ID [" + String(My_block.ID) + "]";
             this.logger.record({
-                "Status":"delete",
-                "BlockName":My_block.type,
-                "BlockID": this._getBlockID_by_block(My_block),
-                "ID":My_block.ID,
+                "Status"    : "delete",
+                "BlockName" : My_block.type,
+                "BlockID"   : My_block.BlockID,
+                "ID"        : My_block.ID,
                 "NewParentID":My_block.newParentId,
-                "Element":My_block.element,
+                "Element"   : My_block.element,
                 "NewInputName":My_block.newInputName
             });
             delete this.blocks.select_ID
@@ -775,7 +821,95 @@ class Log_filter{
         }
     }
 
-    updateChange(Json,block){
+    filter_create_var(Json)
+    {
+        var create = false;
+        if(this.matchvariableID_2_ID.hasOwnProperty(Json.varId)){}
+        else{create = true;}
+
+        if(create)
+        {
+            // create new block class
+            this.matchvariableID_2_ID[Json.varId]   = this.running_ID;
+            this.variables[this.running_ID]         = new variable(this.running_ID, Json.type, Json.varId, Json.varName, Json.varType);
+            var My_variable                         = this.variables[this.running_ID]
+            My_variable.element["name"]             = My_variable.varName
+
+            this.logger.record({
+                "Status"    :"var_create",
+                "BlockName" :"variable",
+                //"BlockID"   :"",
+                "ID"        :My_variable.ID,
+                //"NewParentID":"",
+                "Element"   :My_variable.element,
+                //"NewInputName":My_block.newInputName
+            });
+            this.running_ID++;
+            return true;
+        }
+        return false;
+    }
+
+    filter_change_var(Json){
+        if(this.matchvariableID_2_ID.hasOwnProperty(Json.varId)){
+            var MyVar               = this.variables[this.matchvariableID_2_ID[Json.varId]]
+            var oldName             = Json.oldName
+            var newName             = Json.newName
+            MyVar.varName           = newName
+            MyVar.element["name"]   = newName
+
+            this.logger.record({
+                "Status"    :"var_rename",
+                "BlockName" :"variable",
+                //"BlockID"   :"",
+                "ID"        :MyVar.ID,
+                //"NewParentID":"",
+                "Element"   :MyVar.element,
+                //"NewInputName":My_block.newInputName
+            });
+
+            // all block is related be changed value too
+            for(const [ID,block] of Object.entries(this.blocks))
+            {
+                if(block.element["field"]["VAR"] == oldName){
+                    var modified = this._renameVariable_in_block(block,oldName,newName);
+                    if(modified){
+                        this.logger.record({
+                            "Status"    :"change",
+                            "BlockName" : block.type,
+                            "BlockID"   : block.BlockID,
+                            "ID"        :block.ID,
+                            //"NewParentID":"",
+                            "Element"   :block.element,
+                            //"NewInputName":""
+                        });
+                    }
+                    else{}
+                }
+                else{}
+            }
+        }
+        else{console.log("This var is not registered")}
+    }
+
+    filter_delete_var(Json){
+        if(this.matchvariableID_2_ID.hasOwnProperty(Json.varId)){
+            var MyVar    = this.variables[this.matchvariableID_2_ID[Json.varId]]
+            this.logger.record({
+                "Status"    :"var_delete",
+                "BlockName" :"variable",
+                //"BlockID"   : My_block.BlockID,
+                "ID"        :MyVar.ID,
+                //"NewParentID":My_block.newParentId,
+                "Element"   :MyVar.element,
+                //"NewInputName":My_block.newInputName
+            });
+            delete this.variables[this.matchvariableID_2_ID[Json.varId]]
+        }
+        else{console.log("This var is not registered")}
+    }
+
+    updateChange(Json,block,ws){
         //console.log(Json);
         //console.log(block,block.NEXT_STATEMENT);
         //console.log(block.childBlocks_); //>> []
@@ -789,7 +923,7 @@ class Log_filter{
             case 'delete':
                 this.filter_delete(Json);
             case 'create':
-                this.filter_create(Json,block);
+                this.filter_create(Json,block,ws);
                 break;
             case 'change':
                 this.filter_change(Json,block);
@@ -797,6 +931,15 @@ class Log_filter{
                 break;
             case 'move':
                 this.filter_move(Json);
+                break;
+            case 'var_create':
+                this.filter_create_var(Json);
+                break;
+            case 'var_rename':
+                this.filter_change_var(Json);
+                break;
+            case 'var_delete':
+                this.filter_delete_var(Json);
                 break;
             default:
                 break;
