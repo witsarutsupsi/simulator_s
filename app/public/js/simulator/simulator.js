@@ -189,7 +189,7 @@ function Simulator() {
 
 				kvLog = '' + ($("#Text_MSG_KV_AE", svgDoc).text()); 
 				if(kvLogOld != kvLog){
-					$.ajax({type: 'POST',url: '/KAE',data: {logAE: kvLog}});
+					$.ajax({type: 'POST',url: '/KAE',data: {logAE: kvLog.slice(0, -4)}});
 					kvLogOld = kvLog; 
 				}
 				
