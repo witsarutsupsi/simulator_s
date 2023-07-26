@@ -2041,7 +2041,7 @@ var UnityLoader = UnityLoader || {
         }
     }(),
     compatibilityCheck: function(e, t, r) {
-       t();
+        t();
     },
     Blobs: {},
     loadCode: function(e, t, r) {
